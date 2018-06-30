@@ -14,12 +14,6 @@ namespace DavisInvoice
     public partial class DavisInvoice : Form
     {
 
-        //Settings until a proper setting menu is created
-        static int invoiceWorkflow = 108;
-        static int stateAccounting = 144;
-        static int stateProcessing = 145;
-        static int stateComplete = 146;
-        static int documentType = 0;
 
         public DavisInvoice()
         {
@@ -71,14 +65,14 @@ namespace DavisInvoice
             var isInvoice = new SearchCondition();
             isInvoice.Expression.DataPropertyValuePropertyDef = (int)MFBuiltInPropertyDef.MFBuiltInPropertyDefWorkflow;
             isInvoice.ConditionType = MFConditionType.MFConditionTypeEqual;
-            isInvoice.TypedValue.SetValue(MFDataType.MFDatatypeLookup, invoiceWorkflow);
+            isInvoice.TypedValue.SetValue(MFDataType.MFDatatypeLookup, Properties.Settings.Default.invoiceWorkflow);
             searchConditions.Add(-1, isInvoice);
 
             //is it in the accounting state
             var isAccounting = new SearchCondition();
             isAccounting.Expression.DataPropertyValuePropertyDef = (int)MFBuiltInPropertyDef.MFBuiltInPropertyDefState;
             isAccounting.ConditionType = MFConditionType.MFConditionTypeEqual;
-            isAccounting.TypedValue.SetValue(MFDataType.MFDatatypeLookup, stateAccounting);
+            isAccounting.TypedValue.SetValue(MFDataType.MFDatatypeLookup, Properties.Settings.Default.stateAccounting);
             searchConditions.Add(-1, isAccounting);
 
             var invoices = currVault.ObjectSearchOperations.SearchForObjectsByConditions(searchConditions, MFSearchFlags.MFSearchFlagNone, false);
@@ -92,7 +86,7 @@ namespace DavisInvoice
             {
                 var objtype = default(ObjType);
                 objtype = currVault.ObjectTypeOperations.GetObjectType(invoice.ObjVer.Type);
-                MessageBox.Show(postMonthForm.StrPostMonth);
+                MessageBox.Show(objtype.NameSingular);
             }
 
             //loop through invoices collecting at import workflow state
