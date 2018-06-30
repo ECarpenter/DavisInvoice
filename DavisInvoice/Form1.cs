@@ -83,11 +83,16 @@ namespace DavisInvoice
 
             var invoices = currVault.ObjectSearchOperations.SearchForObjectsByConditions(searchConditions, MFSearchFlags.MFSearchFlagNone, false);
 
+            //get post month 
+            var postMonthForm = new PostMonth();
+            postMonthForm.ShowDialog();
+            
+            
             foreach (ObjectVersion invoice in invoices)
             {
                 var objtype = default(ObjType);
                 objtype = currVault.ObjectTypeOperations.GetObjectType(invoice.ObjVer.Type);
-                MessageBox.Show(objtype.NameSingular);
+                MessageBox.Show(postMonthForm.StrPostMonth);
             }
 
             //loop through invoices collecting at import workflow state
