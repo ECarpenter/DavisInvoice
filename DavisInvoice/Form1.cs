@@ -252,7 +252,8 @@ namespace DavisInvoice
                 payables.Add(payable);
 
                 //change workflow state 
-
+                propValues.SearchForProperty((int)MFBuiltInPropertyDef.MFBuiltInPropertyDefState).TypedValue.SetValue(MFDataType.MFDatatypeLookup, Properties.Settings.Default.stateProcessing);
+                currVault.ObjectPropertyOperations.SetAllProperties(invoice.ObjVer, true, propValues);
 
             }
 
