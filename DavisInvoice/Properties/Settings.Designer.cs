@@ -193,5 +193,50 @@ namespace DavisInvoice.Properties {
                 return ((int)(this["objVendor"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1161")]
+        public int propProperty {
+            get {
+                return ((int)(this["propProperty"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1167")]
+        public int propPropertyID {
+            get {
+                return ((int)(this["propPropertyID"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1150")]
+        public int propVendor {
+            get {
+                return ((int)(this["propVendor"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1162")]
+        public int propYardiCode {
+            get {
+                return ((int)(this["propYardiCode"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1147")]
+        public int propDescription {
+            get {
+                return ((int)(this["propDescription"]));
+            }
+        }
     }
 }

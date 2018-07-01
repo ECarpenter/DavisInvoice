@@ -59,5 +59,20 @@
     <Setting Name="objVendor" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">161</Value>
     </Setting>
+    <Setting Name="propProperty" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">1161</Value>
+    </Setting>
+    <Setting Name="propPropertyID" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">1167</Value>
+    </Setting>
+    <Setting Name="propVendor" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">1150</Value>
+    </Setting>
+    <Setting Name="propYardiCode" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">1162</Value>
+    </Setting>
+    <Setting Name="propDescription" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">1147</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
