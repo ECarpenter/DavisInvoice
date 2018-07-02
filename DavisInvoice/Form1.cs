@@ -31,8 +31,9 @@ namespace DavisInvoice
 
             //export
             button1.Click += delegate (object sender, EventArgs e) { button1_Click(sender, e, currVault, mFilesApp); };
-
-            //pull up invoices
+            //import
+            button2.Click += delegate (object sender, EventArgs e) { button2_Click(sender, e, currVault, mFilesApp); };
+            
 
         }
 
@@ -281,17 +282,85 @@ namespace DavisInvoice
         //import button
         private void button2_Click(object sender, EventArgs e)
         {
-            //open XML file
+            
+        }
+        private void button2_Click(object sender, EventArgs e, Vault currVault, MFilesClientApplication mFilesApp)
+        {
+            OpenFileDialog openFile = new OpenFileDialog();
+            openFile.Filter ="XML Files (*.xml) | *.xml";
 
-            //loop through items
+            if (openFile.ShowDialog() == DialogResult.OK)
+            {
 
-            //find mFiles object with matching invoice number
+                //open XML file
+                XElement inputFile = XElement.Load(openFile.FileName);
+                IEnumerable<XElement> inputxml = from el in inputFile.Element("Payables").Elements() select el;
 
-            //add check number to mFiles Object
 
-            //change state to complete
+                //loop through items
+                int count = 0;
+                foreach (XElement payable in inputxml)
+                {
+                    //Check that a check has been cut in Yardi.
+                    if (payable.Element("Details").Element("Detail").Elements("CheckNumber").Any())
+                    {
+                        string checkNumber = payable.Element("Details").Element("Detail").Element("CheckNumber").Value;
+                        //MessageBox.Show(checkNumber);
 
-            //End Loop
+                        //Find Invoice in mFiles
+                        //pull invoices using search conditions
+                        var searchConditions = new SearchConditions();
+
+                        //is it not deleted
+                        var isNotDeleted = new SearchCondition();
+                        isNotDeleted.Expression.DataStatusValueType = MFStatusType.MFStatusTypeDeleted;
+                        isNotDeleted.Expression.DataStatusValueDataFunction = MFDataFunction.MFDataFunctionNoOp;
+                        isNotDeleted.ConditionType = MFConditionType.MFConditionTypeNotEqual;
+                        isNotDeleted.TypedValue.SetValue(MFDataType.MFDatatypeBoolean, true);
+                        searchConditions.Add(-1, isNotDeleted);
+
+                        //is it part of the Invoice workflow
+                        var isInvoice = new SearchCondition();
+                        isInvoice.Expression.DataPropertyValuePropertyDef = (int)MFBuiltInPropertyDef.MFBuiltInPropertyDefWorkflow;
+                        isInvoice.ConditionType = MFConditionType.MFConditionTypeEqual;
+                        isInvoice.TypedValue.SetValue(MFDataType.MFDatatypeLookup, Properties.Settings.Default.invoiceWorkflow);
+                        searchConditions.Add(-1, isInvoice);
+
+                        //is it in the payment processing state
+                        var isAccounting = new SearchCondition();
+                        isAccounting.Expression.DataPropertyValuePropertyDef = (int)MFBuiltInPropertyDef.MFBuiltInPropertyDefState;
+                        isAccounting.ConditionType = MFConditionType.MFConditionTypeEqual;
+                        isAccounting.TypedValue.SetValue(MFDataType.MFDatatypeLookup, Properties.Settings.Default.stateProcessing);
+                        searchConditions.Add(-1, isAccounting);
+
+                        //is it the correct payable
+                        var isPayable = new SearchCondition();
+                        isPayable.Expression.DataPropertyValuePropertyDef = Properties.Settings.Default.propInvoiceNumber;
+                        isPayable.ConditionType = MFConditionType.MFConditionTypeEqual;
+                        isPayable.TypedValue.SetValue(MFDataType.MFDatatypeText, payable.Element("InvoiceNumber").Value);
+                        searchConditions.Add(-1, isPayable);
+
+                        //Perform search
+                        var invoices = currVault.ObjectSearchOperations.SearchForObjectsByConditions(searchConditions, MFSearchFlags.MFSearchFlagNone, false);
+
+                        foreach (ObjectVersion invoice in invoices)
+                        {
+                            var propValues = new PropertyValues();
+                            var currPropertyValue = new PropertyValue();
+                            propValues = currVault.ObjectPropertyOperations.GetProperties(invoice.ObjVer);
+
+                            //currPropertyValue = propValues.SearchForProperty(Properties.Settings.Default.propCheckNumber);
+                            count++;
+                            propValues.SearchForProperty(Properties.Settings.Default.propCheckNumber).TypedValue.SetValue(MFDataType.MFDatatypeText, checkNumber);
+                            //change workflow state 
+                            propValues.SearchForProperty((int)MFBuiltInPropertyDef.MFBuiltInPropertyDefState).TypedValue.SetValue(MFDataType.MFDatatypeLookup, Properties.Settings.Default.stateComplete);
+                            currVault.ObjectPropertyOperations.SetAllProperties(invoice.ObjVer, true, propValues);
+                        }
+                    }
+
+                }
+                MessageBox.Show(count.ToString() + " Invoices update in mFiles!");
+            }
         }
     }
 }
