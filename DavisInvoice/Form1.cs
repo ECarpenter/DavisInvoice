@@ -104,67 +104,80 @@ namespace DavisInvoice
                     propValues = currVault.ObjectPropertyOperations.GetProperties(invoice.ObjVer);
 
                     XElement details = new XElement("Details");
-                    XElement detail = new XElement("Detail");
 
                     //Get Ledger Entry reference
                     currPropertyValue = propValues.SearchForProperty(Properties.Settings.Default.propLedgerEntry);
+                    
                     if (currPropertyValue.TypedValue.DataType == MFDataType.MFDatatypeMultiSelectLookup)
                     {
-                        var lookup = new Lookup();
-                        lookup = currPropertyValue.TypedValue.GetValueAsLookup();
+                        var lookups = new Lookups();
 
-                        var propDef = new PropertyDef();
-                        propDef = currVault.PropertyDefOperations.GetPropertyDef(currPropertyValue.PropertyDef);
-                        var valListObjType = new ObjType();
-                        valListObjType = currVault.ValueListOperations.GetValueList(propDef.ValueList);
+                        lookups = currPropertyValue.TypedValue.GetValueAsLookups();
 
-                        if (valListObjType.RealObjectType)
+                        int i = 0;
+                        foreach (Lookup lookup in lookups)
                         {
-                            //Get Ledgery Entry Object 
-                            var objDetail = new ObjVer();
-                            objDetail.SetIDs(valListObjType.ID, lookup.Item, lookup.Version);
-                            var detailValues = new PropertyValues();
-                            var detailValue = new PropertyValue();
-                            detailValues = currVault.ObjectPropertyOperations.GetProperties(objDetail);
+                            XElement detail = new XElement("Detail");
 
-                            //Get Account
-                            detailValue = detailValues.SearchForProperty(Properties.Settings.Default.propAccount);
-                            if (detailValue.TypedValue.DataType == MFDataType.MFDatatypeMultiSelectLookup)
+                            var propDef = new PropertyDef();
+                            propDef = currVault.PropertyDefOperations.GetPropertyDef(currPropertyValue.PropertyDef);
+                            var valListObjType = new ObjType();
+                            valListObjType = currVault.ValueListOperations.GetValueList(propDef.ValueList);
+                        
+                            if (valListObjType.RealObjectType)
                             {
-                                lookup = detailValue.TypedValue.GetValueAsLookup();
-
-                                propDef = currVault.PropertyDefOperations.GetPropertyDef(detailValue.PropertyDef);
-                                valListObjType = currVault.ValueListOperations.GetValueList(propDef.ValueList);
-
-                                if (valListObjType.RealObjectType)
+                                i++;
+                                //Get Ledgery Entry Object 
+                                var objDetail = new ObjVer();
+                                objDetail.SetIDs(valListObjType.ID, lookup.Item, lookup.Version);
+                                var detailValues = new PropertyValues();
+                                var detailValue = new PropertyValue();
+                                detailValues = currVault.ObjectPropertyOperations.GetProperties(objDetail);
+                                MessageBox.Show(i.ToString());
+                                //Get Account
+                                detailValue = detailValues.SearchForProperty(Properties.Settings.Default.propAccount);
+                                if (detailValue.TypedValue.DataType == MFDataType.MFDatatypeMultiSelectLookup)
                                 {
-                                    //Get Account Number 
-                                    var objAccount = new ObjVer();
-                                    objAccount.SetIDs(valListObjType.ID, lookup.Item, lookup.Version);
-                                    var accountValues = new PropertyValues();
-                                    var accountValue = new PropertyValue();
-                                    accountValues = currVault.ObjectPropertyOperations.GetProperties(objAccount);
-                                    accountValue = accountValues.SearchForProperty(Properties.Settings.Default.propGLCode);
-                                    XElement account = new XElement("AccountId");
-                                    account.SetValue(accountValue.GetValueAsLocalizedText());
-                                    detail.Add(account);
+                                    Lookup lookupAccount = new Lookup();
+                                    lookupAccount = detailValue.TypedValue.GetValueAsLookup();
+
+                                    propDef = currVault.PropertyDefOperations.GetPropertyDef(detailValue.PropertyDef);
+                                    valListObjType = currVault.ValueListOperations.GetValueList(propDef.ValueList);
+
+                                    if (valListObjType.RealObjectType)
+                                    {
+                                        //Get Account Number 
+                                        var objAccount = new ObjVer();
+                                        objAccount.SetIDs(valListObjType.ID, lookupAccount.Item, lookupAccount.Version);
+                                        var accountValues = new PropertyValues();
+                                        var accountValue = new PropertyValue();
+                                        accountValues = currVault.ObjectPropertyOperations.GetProperties(objAccount);
+                                        accountValue = accountValues.SearchForProperty(Properties.Settings.Default.propGLCode);
+                                        XElement account = new XElement("AccountId");
+                                        account.SetValue(accountValue.GetValueAsLocalizedText());
+                                        detail.Add(account);
+                                    }
                                 }
+
+                                //get Description-Notes
+                                detailValue = detailValues.SearchForProperty(Properties.Settings.Default.propDescription);
+                                XElement notes = new XElement("Notes");
+                                notes.SetValue(detailValue.GetValueAsLocalizedText());
+                                detail.Add(notes);
+                                payable.Add(notes);
+
+                                //get Amount
+                                detailValue = detailValues.SearchForProperty(Properties.Settings.Default.propGLAmount);
+                                XElement amount = new XElement("Amount");
+                                amount.SetValue(detailValue.GetValueAsLocalizedText());
+                                detail.Add(amount);
+                                totalAmount += Convert.ToDouble(detailValue.GetValueAsLocalizedText());
                             }
 
-                            //get Description-Notes
-                            detailValue = detailValues.SearchForProperty(Properties.Settings.Default.propDescription);
-                            XElement notes = new XElement("Notes");
-                            notes.SetValue(detailValue.GetValueAsLocalizedText());
-                            detail.Add(notes);
-                            payable.Add(notes);
-
-                            //get Amount
-                            detailValue = detailValues.SearchForProperty(Properties.Settings.Default.propGLAmount);
-                            XElement amount = new XElement("Amount");
-                            amount.SetValue(detailValue.GetValueAsLocalizedText());
-                            detail.Add(amount);
-                            totalAmount += Convert.ToDouble(detailValue.GetValueAsLocalizedText());
-
+                            XElement propertyID = new XElement("PropertyId");
+                            detail.Add(propertyID);
+                            details.Add(detail);
+                            
                         }
                     }
 
@@ -189,9 +202,22 @@ namespace DavisInvoice
                             var propertyValue = new PropertyValue();
                             propertyValues = currVault.ObjectPropertyOperations.GetProperties(objProperty);
                             propertyValue = propertyValues.SearchForProperty(Properties.Settings.Default.propPropertyID);
-                            XElement propertyID = new XElement("PropertyId");
-                            propertyID.SetValue(propertyValue.GetValueAsLocalizedText());
-                            detail.Add(propertyID);
+                            
+                            
+
+                            IEnumerable < XElement > ieDetails = from el in details.Elements() select el;
+
+
+                            //loop through items
+
+                            foreach (XElement detail in ieDetails)
+                            {
+                                //Check that a check has been cut in Yardi.
+                                if (detail.Elements("PropertyId").Any())
+                                {
+                                    detail.Element("PropertyId").SetValue(propertyValue.GetValueAsLocalizedText());
+                                }
+                            }
                         }
                     }
 
@@ -223,7 +249,6 @@ namespace DavisInvoice
                     }
 
                     // Add details to payable
-                    details.Add(detail);
                     payable.Add(details);
 
                     //Add Post Month
