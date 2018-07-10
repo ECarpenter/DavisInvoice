@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace DavisInvoice
 {
@@ -14,9 +15,26 @@ namespace DavisInvoice
         [STAThread]
         static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new DavisInvoice());
+            try
+            {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new DavisInvoice());
+
+            }
+            catch (Exception ex)
+            {
+                string sourceName = "WindowsService.ExceptionLog";
+                if (!EventLog.SourceExists(sourceName))
+                {
+                    EventLog.CreateEventSource(sourceName, "DavisInvoice");
+                }
+
+                EventLog eventLog = new EventLog();
+                eventLog.Source = sourceName;
+                string message = String.Format("Exception: {0} \n\nStack: {1}", ex.Message, ex.StackTrace);
+                eventLog.WriteEntry(message, EventLogEntryType.Error);
+            }
         }
     }
 }

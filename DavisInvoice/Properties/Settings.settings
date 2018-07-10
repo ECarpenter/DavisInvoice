@@ -74,5 +74,8 @@
     <Setting Name="propDescription" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">1147</Value>
     </Setting>
+    <Setting Name="vaultGUID" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">C5606A9E-E085-4ED9-BD04-BCA8715988BD</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

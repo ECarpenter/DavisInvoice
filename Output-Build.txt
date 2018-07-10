@@ -1,0 +1,10 @@
+﻿1>------ Build started: Project: DavisInvoice, Configuration: Debug Any CPU ------
+1>  DavisInvoice -> C:\Users\ecarp\source\repos\DavisInvoice\DavisInvoice\bin\Debug\DavisInvoice.exe
+Building DavisInvoice...
+2>------ Publish started: Project: DavisInvoice, Configuration: Debug Any CPU ------
+Connecting to 'C:\DeployDavisInvoice\'...
+Publishing files...
+Publish success.
+C:\DeployDavisInvoice\
+========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========
+========== Publish: 1 succeeded, 0 failed, 0 skipped ==========

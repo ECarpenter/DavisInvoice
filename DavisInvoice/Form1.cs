@@ -21,10 +21,11 @@ namespace DavisInvoice
             InitializeComponent();
             //connect to mFiles
             var mFilesApp = new MFilesClientApplication();
+            
 
             //open vault
             var vaultConnect = new VaultConnection();
-            vaultConnect = mFilesApp.GetVaultConnection(Properties.Settings.Default.VaultName);
+            vaultConnect = mFilesApp.GetVaultConnectionsWithGUID("{" + Properties.Settings.Default.vaultGUID + "}").Cast<VaultConnection>().FirstOrDefault();
 
             var currVault = new Vault();
             currVault = vaultConnect.BindToVault(this.Handle, true, false);
@@ -133,7 +134,7 @@ namespace DavisInvoice
                                 var detailValues = new PropertyValues();
                                 var detailValue = new PropertyValue();
                                 detailValues = currVault.ObjectPropertyOperations.GetProperties(objDetail);
-                                MessageBox.Show(i.ToString());
+                                //MessageBox.Show(i.ToString());
                                 //Get Account
                                 detailValue = detailValues.SearchForProperty(Properties.Settings.Default.propAccount);
                                 if (detailValue.TypedValue.DataType == MFDataType.MFDatatypeMultiSelectLookup)
@@ -164,7 +165,6 @@ namespace DavisInvoice
                                 XElement notes = new XElement("Notes");
                                 notes.SetValue(detailValue.GetValueAsLocalizedText());
                                 detail.Add(notes);
-                                payable.Add(notes);
 
                                 //get Amount
                                 detailValue = detailValues.SearchForProperty(Properties.Settings.Default.propGLAmount);
@@ -255,6 +255,12 @@ namespace DavisInvoice
                     XElement postMonth = new XElement("PostMonth");
                     postMonth.SetValue(postMonthForm.StrPostMonth);
                     payable.Add(postMonth);
+
+                    //Get link to object
+                    XElement link = new XElement("Notes");
+                    string strLink = "https://openurl.m-files.com/2.0/OpenMFilesUrl.html?MFilesURL=m-files://show/" + Properties.Settings.Default.vaultGUID + "/" + invoice.ObjVer.Type.ToString() + "-" + invoice.ObjVer.ID.ToString();
+                    link.SetValue(strLink);
+                    payable.Add(link);
 
                     //get Invoice Number
                     currPropertyValue = propValues.SearchForProperty(Properties.Settings.Default.propInvoiceNumber);

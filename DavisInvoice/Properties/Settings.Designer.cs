@@ -238,5 +238,14 @@ namespace DavisInvoice.Properties {
                 return ((int)(this["propDescription"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C5606A9E-E085-4ED9-BD04-BCA8715988BD")]
+        public string vaultGUID {
+            get {
+                return ((string)(this["vaultGUID"]));
+            }
+        }
     }
 }
