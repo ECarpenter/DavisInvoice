@@ -258,7 +258,7 @@ namespace DavisInvoice
 
                     //Get link to object
                     XElement link = new XElement("Notes");
-                    string strLink = "https://openurl.m-files.com/2.0/OpenMFilesUrl.html?MFilesURL=m-files://show/" + Properties.Settings.Default.vaultGUID + "/" + invoice.ObjVer.Type.ToString() + "-" + invoice.ObjVer.ID.ToString();
+                    string strLink = "m-files://show/" + Properties.Settings.Default.vaultGUID + "/" + invoice.ObjVer.Type.ToString() + "-" + invoice.ObjVer.ID.ToString();
                     link.SetValue(strLink);
                     payable.Add(link);
 
@@ -279,6 +279,12 @@ namespace DavisInvoice
                     XElement dueDate = new XElement("DueDate");
                     dueDate.SetValue(currPropertyValue.GetValueAsLocalizedText());
                     payable.Add(dueDate);
+
+                    //Set Expense Type
+                    XElement expenseType = new XElement("ExpenseType");
+                    expenseType.SetValue("Contract");
+                    payable.Add(expenseType);
+
 
                     //Set Total
                     XElement total = new XElement("TotalAmount");
